@@ -19,7 +19,7 @@ contains a dictionary mapping vertex labels to edges. For example:
     '2': set(),
     '3': {'0'}
 }
-```
+````
 
 This represents a graph with four vertices and two total (bidirectional) edges.
 The vertex `'2'` has no edges, while `'0'` is connected to both `'1'` and `'3'`.
