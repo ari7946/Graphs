@@ -1,5 +1,19 @@
 from room import Room
+from item import Item
 import random
+
+class Queue:
+    def __init__(self):
+        self.queue = []
+    def enqueue(self, value):
+        self.queue.append(value)
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+    def size(self):
+        return len(self.queue)
 
 class World:
     def __init__(self):
@@ -14,13 +28,13 @@ class World:
         adjacent grid is also unoccupied.
         """
         dirs = []
-        if room.n_to is None and self._checkCoordinates(coords, "n"):
+        if self._checkCoordinates(coords, "n"):
             dirs.append("n")
-        if room.s_to is None and self._checkCoordinates(coords, "s"):
+        if self._checkCoordinates(coords, "s"):
             dirs.append("s")
-        if room.w_to is None and self._checkCoordinates(coords, "w"):
+        if self._checkCoordinates(coords, "w"):
             dirs.append("w")
-        if room.e_to is None and self._checkCoordinates(coords, "e"):
+        if self._checkCoordinates(coords, "e"):
             dirs.append("e")
         random.shuffle(dirs)
         if len(dirs) > 0:
@@ -108,6 +122,8 @@ class World:
                 self.occupied.add(str(xy))
                 new_room.xy = xy
                 validRooms.add(i)
+                if i == numRooms - 1:
+                    new_room.addItem(Item("Treasure", "This is treasure"))
 
         # Set the starting room to the first room. Change this if you want a new starting room.
         self.startingRoom = self.rooms[0]
@@ -118,3 +134,33 @@ class World:
             print("Something is wrong....")
 
         return self.rooms
+    def findTreasure(self, startRoom):
+        q = Queue()
+        visited = set()
+        q.enqueue(([], startRoom))
+        while q.size() > 0:
+            path_and_room = q.dequeue()
+            room = path_and_room[1]
+            if room not in visited:
+                if len(room.items) > 0:
+                    for item in room.items:
+                        if item.name == "Treasure":
+                            return path_and_room[0]
+                visited.add(room)
+                if room.n_to is not None:
+                    new_path = list(path_and_room[0])
+                    new_path.append("n")
+                    q.enqueue((new_path, room.n_to))
+                if room.s_to is not None:
+                    new_path = list(path_and_room[0])
+                    new_path.append("s")
+                    q.enqueue((new_path, room.s_to))
+                if room.e_to is not None:
+                    new_path = list(path_and_room[0])
+                    new_path.append("e")
+                    q.enqueue((new_path, room.e_to))
+                if room.w_to is not None:
+                    new_path = list(path_and_room[0])
+                    new_path.append("w")
+                    q.enqueue((new_path, room.w_to))
+        return None
