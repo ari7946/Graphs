@@ -134,6 +134,7 @@ class World:
             print("Something is wrong....")
 
         return self.rooms
+        
     def findTreasure(self, startRoom):
         q = Queue()
         visited = set()
@@ -164,3 +165,31 @@ class World:
                     new_path.append("w")
                     q.enqueue((new_path, room.w_to))
         return None
+
+    def printMap(self):
+        coordinates = [[int(i) for i in x[1:-1].split(", ")] for x in self.occupied]
+        xMax = xMin = yMax = yMin = 0
+        for c in coordinates:
+            if c[0] > xMax:
+                xMax = c[0]
+            if c[0] < xMin:
+                xMin = c[0]
+            if c[1] > yMax:
+                yMax = c[1]
+            if c[1] < yMin:
+                yMin = c[1]
+        row = [" "] * (1 + yMax - yMin)
+        grid = []
+        for i in range(0, 1 + xMax - xMin):
+            grid.append(list(row))
+        for c in coordinates:
+            if c[0] == 0 and c[1] == 0:
+                grid[c[0] - xMin][c[1] - yMin] = "S"
+            else:
+                grid[c[0] - xMin][c[1] - yMin] = "0"
+        gridString = ""
+        for row in grid:
+            for room in row:
+                gridString += room
+            gridString += "\n"
+        print (gridString)
